@@ -16,7 +16,7 @@ on:
 #    branches: [ main ]
 jobs:
   first:
-    runs-on: debian:bookworm-slim
+    runs-on: debian:bullseye-slim
     steps:
     - name: Checkout
       uses: actions/checkout@v3
