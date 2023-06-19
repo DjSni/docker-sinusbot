@@ -1,0 +1,70 @@
+name: "schedule check and build"
+on:
+  workflow_dispatch:
+    inputs:
+      logLevel:
+        description: 'Log level'     
+        required: true
+        default: 'warning'
+      tags:
+        description: 'Test the image build'
+  schedule:
+    - cron: "16 4 3,18 * *"
+#  push:
+#    branches: [ main ]
+#  pull_request:
+#    branches: [ main ]
+jobs:
+  first:
+    runs-on: debian:bookworm-slim
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v3
+    - name: Set ENV variables
+      run: |
+        echo "COMMIT_HASH=$(git rev-parse --short HEAD)" >> $GITHUB_ENV
+        echo "LATST_COMMIT_HASH=$(cat dependencies/last-commit)" >> $GITHUB_ENV
+        echo "VERSION=1.0.2" >> $GITHUB_ENV
+    - name: echo Remote
+      run: echo ${{env.COMMIT_HASH}}
+    - name: echo Last
+      run: echo ${{env.LAST_COMMIT_HASH}}
+    - name: echo Version
+      run: echo ${{env.VERSION}}
+    - name: Update last commit
+      run: echo "${{ env.COMMIT_HASH }}" > dependencies/last-commit
+
+# Build the new way (Docker) 
+    - name: Set up QEMU
+#      if: ${{ env.REMOTE_COMMIT_HASH != env.SAVED_COMMIT_HASH }}
+      uses: docker/setup-qemu-action@v2
+    - name: Set up Docker Buildx
+#      if: ${{ env.REMOTE_COMMIT_HASH != env.SAVED_COMMIT_HASH }}
+      uses: docker/setup-buildx-action@v2
+    - name: Login to DockerHub
+#      if: ${{ env.REMOTE_COMMIT_HASH != env.SAVED_COMMIT_HASH }}
+      uses: docker/login-action@v2
+      with:
+        username: ${{ secrets.DOCKER_USERNAME }}
+        password: ${{ secrets.DOCKER_PASSWORD }}
+    - name: Build and push
+#      if: ${{ env.REMOTE_COMMIT_HASH != env.SAVED_COMMIT_HASH }}
+      uses: docker/build-push-action@v3
+      with:
+        push: true
+        platforms: linux/amd64
+        tags: dersni/docker-kasm-ubuntu-dektop-edit:${{env.VERSION}}.${{ github.run_number }}-${{env.COMMIT_HASH}},dersni/docker-sinusbot:latest
+        context: .
+        file: Dockerfile
+# If all done, commit changes
+    - name: Commit changes an push it to remote
+#      if: ${{ env.REMOTE_COMMIT_HASH != env.SAVED_COMMIT_HASH }}
+      uses: actions-x/commit@v6
+      with:
+        email: 41898282+github-actions[bot]@users.noreply.github.com
+        name: GitHub Actions
+        branch: main
+        files: dependencies/last-commit
+        repository: https://github.com/DjSni/docker-sinusbot
+        token: ${{ secrets.GITHUB_TOKEN }}
+        force: false
