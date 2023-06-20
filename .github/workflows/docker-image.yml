@@ -16,7 +16,7 @@ on:
 #    branches: [ main ]
 jobs:
   first:
-    runs-on: debian:bullseye-slim
+    runs-on: ubuntu-latest
     steps:
     - name: Checkout
       uses: actions/checkout@v3
@@ -53,7 +53,7 @@ jobs:
       with:
         push: true
         platforms: linux/amd64
-        tags: dersni/docker-kasm-ubuntu-dektop-edit:${{env.VERSION}}.${{ github.run_number }}-${{env.COMMIT_HASH}},dersni/docker-sinusbot:latest
+        tags: dersni/docker-sinusbot:${{env.VERSION}}.${{ github.run_number }}-${{env.COMMIT_HASH}},dersni/docker-sinusbot:latest
         context: .
         file: Dockerfile
 # If all done, commit changes
