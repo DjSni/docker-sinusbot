@@ -1,4 +1,4 @@
-FROM debian:bullseye-slim
+FROM debian:bookworm-slim
 
 LABEL description="SinusBot - TeamSpeak 3 and Discord music bot."
 LABEL version="1.0.2"
