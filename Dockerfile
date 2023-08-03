@@ -4,7 +4,7 @@ LABEL description="SinusBot - TeamSpeak 3 and Discord music bot."
 LABEL version="1.0.2"
 
 # Install dependencies and clean up afterwards
-RUN apt update && apt upgrade && \
+RUN apt update && apt -y upgrade && \
     DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends ca-certificates bzip2 unzip curl python3 procps \
     libpci3 libxslt1.1 libxkbcommon0 locales x11vnc xvfb libevent-2.1-7 liblcms2-2 libatomic1 libxcursor1 libnss3 libegl1-mesa \
     libxcb-xinerama0 libxcb-icccm4 libxcb-image0 libxcb-keysyms1 libxcb-render-util0 libxcb-xkb1 libxkbcommon-x11-0\
